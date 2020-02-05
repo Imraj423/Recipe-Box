@@ -11,4 +11,10 @@ def show_recipe(request, id):
 
 def show_author(request, id):
     author = Author.objects.get(id=id)
-    return render(request, 'author.html', {'author': author})
+    recipes = filter(lambda x: x.author == author, Recipe.objects.all())
+    return render(request, 'author.html', 
+        {
+            'author': author,
+            'recipes': recipes
+        }
+    )

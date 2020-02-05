@@ -1,2 +1,13 @@
 <h1>{{ author }}</h1>
 <h3>{{ author.bio }}</h3>
+
+<h3>Recipes by {{ author }}</h3>
+<ul>
+{% for recipe in recipes %}
+    <li>
+        <a href="/recipe/{{recipe.id}}">
+            {{ recipe }}
+        </a>
+    </li>
+{% endfor %}
+</ul>
