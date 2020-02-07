@@ -1,28 +1,37 @@
 from django.shortcuts import render, reverse, HttpResponseRedirect
 from django.contrib.auth.models import User
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 
 from recipebox.models import Author, Recipe
 from recipebox.forms import RecipeAddForm, AuthorAddForm, SignupForm, LoginForm
 
+
 def index(request):
     recipes = Recipe.objects.all()
-    return render(request, 'index.html', {'data': recipes})
+    user = request.user
+    return render(request, 'index.html', {
+        'data': recipes,
+        'user': user if user.is_authenticated else None
+    })
+
 
 def show_recipe(request, id):
     recipe = Recipe.objects.get(id=id)
     return render(request, 'recipe.html', {'recipe': recipe})
 
+
 def show_author(request, id):
     author = Author.objects.get(id=id)
-    recipes = filter(lambda x: x.author == author, Recipe.objects.all())
+    recipes = Recipe.objects.filter(author=author)
+    # recipes = filter(lambda x: x.author == author, Recipe.objects.all())
     return render(request, 'author.html', 
         {
             'author': author,
             'recipes': recipes
         }
     )
+
 
 @login_required()
 def recipe_add_view(request):
@@ -45,6 +54,7 @@ def recipe_add_view(request):
 
     return render(request, html, {'form': form})
 
+
 @login_required()
 def author_add_view(request):
     html = 'generic_form.html'
@@ -57,6 +67,7 @@ def author_add_view(request):
     form = AuthorAddForm()
 
     return render(request, html, {'form': form})
+
 
 def login_view(request):
     html = 'generic_form.html'
@@ -93,3 +104,8 @@ def signup_view(request):
             return HttpResponseRedirect(reverse('homepage'))
         
     return render(request, html, {'form': SignupForm()})
+
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('homepage'))

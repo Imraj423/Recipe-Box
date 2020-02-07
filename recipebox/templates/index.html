@@ -2,6 +2,18 @@
 
 <ul>
 {% for recipe in data %}
-    <li><a href="recipe/{{recipe.id}}">{{ recipe }}</a></li>
+    <li><a href="/recipe/{{recipe.id}}">{{ recipe }}</a></li>
 {% endfor %}
 </ul>
+
+<a href="/recipeadd/">Create Recipe</a>
+
+{% if user %}
+    <a href="/logout/">Log out</a>
+        {% if user.is_superuser %}
+            <a href="/createuser/">Create User</a>
+        {% endif %}
+{% else %}
+    <a href="/login/">Log in</a>
+{% endif %}
+
