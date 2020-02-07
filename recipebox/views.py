@@ -12,8 +12,13 @@ def show_recipe(request, id):
 
 def show_author(request, id):
     author = Author.objects.get(id=id)
-<<<<<<< HEAD
-    return render(request, 'author.html', {'author': author})
+    recipes = filter(lambda x: x.author == author, Recipe.objects.all())
+    return render(request, 'author.html', 
+        {
+            'author': author,
+            'recipes': recipes
+        }
+    )
 
 def recipe_add_view(request):
     html = "generic_form.html"
@@ -46,12 +51,3 @@ def author_add_view(request):
     form = AuthorAddForm()
 
     return render(request, html, {'form': form})
-=======
-    recipes = filter(lambda x: x.author == author, Recipe.objects.all())
-    return render(request, 'author.html', 
-        {
-            'author': author,
-            'recipes': recipes
-        }
-    )
->>>>>>> 2ad3ea8d39debe14a26e4497bbef70faa144e700
