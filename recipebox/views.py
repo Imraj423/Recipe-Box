@@ -1,6 +1,10 @@
 from django.shortcuts import render, reverse, HttpResponseRedirect
+from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
+
 from recipebox.models import Author, Recipe
-from recipebox.forms import RecipeAddForm, AuthorAddForm
+from recipebox.forms import RecipeAddForm, AuthorAddForm, SignupForm, LoginForm
 
 def index(request):
     recipes = Recipe.objects.all()
@@ -12,9 +16,15 @@ def show_recipe(request, id):
 
 def show_author(request, id):
     author = Author.objects.get(id=id)
-<<<<<<< HEAD
-    return render(request, 'author.html', {'author': author})
+    recipes = filter(lambda x: x.author == author, Recipe.objects.all())
+    return render(request, 'author.html', 
+        {
+            'author': author,
+            'recipes': recipes
+        }
+    )
 
+@login_required()
 def recipe_add_view(request):
     html = "generic_form.html"
 
@@ -35,6 +45,7 @@ def recipe_add_view(request):
 
     return render(request, html, {'form': form})
 
+@login_required()
 def author_add_view(request):
     html = 'generic_form.html'
 
@@ -46,12 +57,39 @@ def author_add_view(request):
     form = AuthorAddForm()
 
     return render(request, html, {'form': form})
-=======
-    recipes = filter(lambda x: x.author == author, Recipe.objects.all())
-    return render(request, 'author.html', 
-        {
-            'author': author,
-            'recipes': recipes
-        }
-    )
->>>>>>> 2ad3ea8d39debe14a26e4497bbef70faa144e700
+
+def login_view(request):
+    html = 'generic_form.html'
+    
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            user = authenticate(username=data['username'], password=data['password'])
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(request.GET.get('next', '/'))
+    
+    return render(request, html, {'form': LoginForm()})
+
+
+def signup_view(request):
+    html = 'generic_form.html'
+
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            user = User.objects.create_user(
+                data['username'], data['email'], data['password1']
+            )
+            login(request, user)
+            Author.objects.create(
+                name=data['username'],
+                user=user
+            )
+            return HttpResponseRedirect(reverse('homepage'))
+        
+    return render(request, html, {'form': SignupForm()})
