@@ -34,5 +34,5 @@ urlpatterns = [
     path('createuser/', views.creatuser_view),
     path('login/', views.login_view),
     path('logout/', views.logout_view),
-    path('', views.index, name="homepage")
+    path('/', views.index, name="homepage")
 ]
