@@ -31,7 +31,7 @@ urlpatterns = [
     path('author/<int:id>', views.show_author),
     path('recipeadd/', views.recipe_add_view, name="recipeadd"),
     path('authoradd/', views.author_add_view),
-    path('createuser/', views.signup_view),
+    path('createuser/', views.creatuser_view),
     path('login/', views.login_view),
     path('logout/', views.logout_view),
     path('', views.index, name="homepage")

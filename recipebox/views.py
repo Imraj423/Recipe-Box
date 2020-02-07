@@ -2,6 +2,7 @@ from django.shortcuts import render, reverse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 
 from recipebox.models import Author, Recipe
 from recipebox.forms import RecipeAddForm, AuthorAddForm, SignupForm, LoginForm
@@ -85,7 +86,8 @@ def login_view(request):
     return render(request, html, {'form': LoginForm()})
 
 
-def signup_view(request):
+@user_passes_test(lambda u: u.is_superuser)
+def creatuser_view(request):
     html = 'generic_form.html'
 
     if request.method == 'POST':
