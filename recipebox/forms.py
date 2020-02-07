@@ -3,12 +3,18 @@ from recipebox.models import Author
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-class RecipeAddForm(forms.Form):
+class RecipeAddForm(forms.Form):    
     title = forms.CharField(max_length=50)
     author = forms.ModelChoiceField(queryset=Author.objects.all())
     description = forms.CharField(widget=forms.Textarea)
     time_required = forms.CharField(max_length=100)
     instructions = forms.CharField(widget=forms.Textarea)
+
+    def __init__(self, user, *args, **kwargs):
+        super(RecipeAddForm, self).__init__(*args, **kwargs)
+        if not user.is_superuser:
+            self.fields['author'].queryset = Author.objects.filter(user=user)
+
 
 class AuthorAddForm(forms.ModelForm):
     class Meta:

@@ -51,7 +51,7 @@ def recipe_add_view(request):
             )
         return HttpResponseRedirect(reverse('homepage'))
 
-    form = RecipeAddForm()
+    form = RecipeAddForm(request.user)
 
     return render(request, html, {'form': form})
 
