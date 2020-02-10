@@ -27,9 +27,9 @@ except Exception:
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('recipe/<int:id>', views.show_recipe),
-    path('author/<int:id>', views.show_author),
+    path('recipe/<int:id>/', views.show_recipe),
+    path('author/<int:id>/', views.show_author),
     path('recipeadd/', views.recipe_add_view, name="recipeadd"),
     path('authoradd/', views.author_add_view),
-    path('/', views.index, name="homepage")
+    path('', views.index, name="homepage")
 ]
