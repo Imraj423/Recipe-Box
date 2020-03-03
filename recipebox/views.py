@@ -25,7 +25,6 @@ def show_recipe(request, id):
 def show_author(request, id):
     author = Author.objects.get(id=id)
     recipes = Recipe.objects.filter(author=author)
-    # recipes = filter(lambda x: x.author == author, Recipe.objects.all())
     return render(request, 'author.html', 
         {
             'author': author,
@@ -39,7 +38,7 @@ def recipe_add_view(request):
     html = "generic_form.html"
 
     if request.method == 'POST':
-        form = RecipeAddForm(request.POST)
+        form = RecipeAddForm(None, request.POST)
         if form.is_valid():
             data = form.cleaned_data
             Recipe.objects.create(

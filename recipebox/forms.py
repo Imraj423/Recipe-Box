@@ -12,7 +12,7 @@ class RecipeAddForm(forms.Form):
 
     def __init__(self, user, *args, **kwargs):
         super(RecipeAddForm, self).__init__(*args, **kwargs)
-        if not user.is_superuser:
+        if user and not user.is_superuser:
             self.fields['author'].queryset = Author.objects.filter(user=user)
 
 
