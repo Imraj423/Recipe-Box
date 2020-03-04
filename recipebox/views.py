@@ -1,11 +1,13 @@
-from django.shortcuts import render, reverse, HttpResponseRedirect
+from django.shortcuts import render, reverse, HttpResponseRedirect, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
-
+from django.contrib import messages
+from .decorators import unauth_user, allowed_users
 from recipebox.models import Author, Recipe
-from recipebox.forms import RecipeAddForm, AuthorAddForm, SignupForm, LoginForm
+from django.contrib.auth.decorators import permission_required
+from recipebox.forms import RecipeAddForm, AuthorAddForm, SignupForm, LoginForm, EditRecipe
 
 
 def index(request):
@@ -25,12 +27,13 @@ def show_recipe(request, id):
 def show_author(request, id):
     author = Author.objects.get(id=id)
     recipes = Recipe.objects.filter(author=author)
-    return render(request, 'author.html', 
-        {
-            'author': author,
-            'recipes': recipes
-        }
-    )
+    faves = author.faves.all()
+    return render(request, 'author.html',
+                  {
+                    'author': author,
+                    'recipes': recipes,
+                    'faves': faves
+                  })
 
 
 @login_required()
@@ -56,6 +59,7 @@ def recipe_add_view(request):
 
 
 @login_required()
+@allowed_users(allowed_roles=['admin', 'author'])
 def author_add_view(request):
     html = 'generic_form.html'
 
@@ -85,6 +89,7 @@ def login_view(request):
     return render(request, html, {'form': LoginForm()})
 
 
+@unauth_user
 @user_passes_test(lambda u: u.is_superuser)
 def creatuser_view(request):
     html = 'generic_form.html'
@@ -110,3 +115,43 @@ def creatuser_view(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('homepage'))
+
+
+
+# @allowed_users(allowed_roles=['admin', 'author'])
+def edit_recipe(request, id):
+    html = 'editRecipe.html'
+    instance = Recipe.objects.get(id=id)
+    if request.method == 'POST':
+        form = EditRecipe(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+
+            return HttpResponseRedirect(reverse("homepage"))
+
+    form = EditRecipe(instance=instance)
+
+    return render(request, html, {'form': form})
+
+
+def add_fave(request, id):
+    recipe = None
+    user = None
+    try:
+        recipe = Recipe.objects.get(id=id)
+        user = Author.objects.get(name=request.user.username)
+        user.faves.add(recipe)
+        user.save()
+    except Exception as e:
+        print(e)
+    return HttpResponseRedirect(reverse("homepage"))
+
+
+
+# def add_fave(request, id):
+#     if request.method == 'POST':
+#         favorite = Recipe.objects.get(id=id)
+#         user = Author.objects.get(name=request.user.username)
+#         user.faves.add(favorite)
+#         messages.add_message(request, messages.INFO, 'Recipe Favorited.')
+#         return redirect('homepage')

@@ -34,5 +34,7 @@ urlpatterns = [
     path('createuser/', views.creatuser_view),
     path('login/', views.login_view),
     path('logout/', views.logout_view),
+    path('editRecipe/<int:id>', views.edit_recipe),
+    path('fav/<int:id>', views.add_fave, name='addfave'),
     path('', views.index, name="homepage")
 ]
