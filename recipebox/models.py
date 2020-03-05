@@ -18,7 +18,7 @@ class Author(models.Model):
     name = models.CharField("Author", max_length=50)
     bio = models.TextField()
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    faves = models.ManyToManyField(Recipe, related_name='faves')
+    faves = models.ManyToManyField(Recipe, related_name='faves', blank=True)
 
     def __str__(self):
         return self.name
