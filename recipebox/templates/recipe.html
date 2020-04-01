@@ -22,7 +22,9 @@
 {% if user %}
    
         {% if user.is_superuser %}
+            {% if request.user %}
             <button><a href='/fav/{{recipe.id}}'>Add to favorites</a></button>
+            {% endif %}
         {% endif %}
 {% else %}
     <a href="/login/">Log in</a>
