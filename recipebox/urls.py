@@ -35,6 +35,7 @@ urlpatterns = [
     path('login/', views.login_view),
     path('logout/', views.logout_view),
     path('editRecipe/<int:id>', views.edit_recipe),
-    path('fav/<int:id>', views.add_fave, name='addfave'),
-    path('', views.index, name="homepage")
+    path('fav/<int:id>', views.add_favorite, name='addfavorite'),
+    path('', views.index, name="homepage"),
+    path('allauths/', views.all_author_view, name='allauthors')
 ]

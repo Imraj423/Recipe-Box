@@ -1,4 +1,5 @@
 <h1>{{ recipe.title }}</h1>
+<button><a href="/">&Hstrok;ome</a></button>
 <h2><a href="/author/{{recipe.author.id}}">
     By: {{ recipe.author }}
 </a></h2>
@@ -17,7 +18,17 @@
 <p>
     {{ recipe.instructions }}
 </p>
-<button><a href='/fav/{{recipe.id}}'>Add to favorites</a></button>
-</h2>etrte{{favorite.id}}  ...tetr
+
+{% if user %}
+   
+        {% if user.is_superuser %}
+            <button><a href='/fav/{{recipe.id}}'>Add to favorites</a></button>
+        {% endif %}
+{% else %}
+    <a href="/login/">Log in</a>
+
+
+{% endif %}
+<!-- {{recipe.title}} -->
 <p></p>
 <a href="/editRecipe/{{recipe.id}}">Edit Recipe</a>

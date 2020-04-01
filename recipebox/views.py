@@ -27,12 +27,13 @@ def show_recipe(request, id):
 def show_author(request, id):
     author = Author.objects.get(id=id)
     recipes = Recipe.objects.filter(author=author)
-    faves = author.faves.all()
+    favorites = author.favorites.all()
+    print(favorites)
     return render(request, 'author.html',
                   {
                     'author': author,
                     'recipes': recipes,
-                    'faves': faves
+                    'favorites': favorites
                   })
 
 
@@ -89,7 +90,7 @@ def login_view(request):
     return render(request, html, {'form': LoginForm()})
 
 
-@unauth_user
+# @unauth_user
 @user_passes_test(lambda u: u.is_superuser)
 def creatuser_view(request):
     html = 'generic_form.html'
@@ -100,14 +101,14 @@ def creatuser_view(request):
         if form.is_valid():
             data = form.cleaned_data
             user = User.objects.create_user(
-                data['username'], data['email'], data['password1']
+                data['username'], data['password1']
             )
             login(request, user)
             Author.objects.create(
                 name=data['username'],
                 user=user
             )
-            return HttpResponseRedirect(reverse('homepage'))
+            return HttpResponseRedirect(reverse('login'))
         
     return render(request, html, {'form': SignupForm()})
 
@@ -117,8 +118,7 @@ def logout_view(request):
     return HttpResponseRedirect(reverse('homepage'))
 
 
-
-# @allowed_users(allowed_roles=['admin', 'author'])
+@allowed_users(allowed_roles=['admin', 'author'])
 def edit_recipe(request, id):
     html = 'editRecipe.html'
     instance = Recipe.objects.get(id=id)
@@ -134,24 +134,24 @@ def edit_recipe(request, id):
     return render(request, html, {'form': form})
 
 
-def add_fave(request, id):
+# @login_required()
+def add_favorite(request, id):
     recipe = None
     user = None
+
     try:
         recipe = Recipe.objects.get(id=id)
         user = Author.objects.get(name=request.user.username)
-        user.faves.add(recipe)
+        user.favorites.add(recipe)
         user.save()
     except Exception as e:
         print(e)
-    return HttpResponseRedirect(reverse("homepage"))
+
+        return HttpResponseRedirect(reverse("homepage"))
+    return render(request, 'author.html', {'recipe': recipe, 'user': user})
 
 
-
-# def add_fave(request, id):
-#     if request.method == 'POST':
-#         favorite = Recipe.objects.get(id=id)
-#         user = Author.objects.get(name=request.user.username)
-#         user.faves.add(favorite)
-#         messages.add_message(request, messages.INFO, 'Recipe Favorited.')
-#         return redirect('homepage')
+def all_author_view(request):
+    html = 'arturos.html'
+    show_all = Author.objects.all()
+    return render(request, html, {'show_all': show_all})
