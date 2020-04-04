@@ -32,7 +32,7 @@ urlpatterns = [
     path('recipeadd/', views.recipe_add_view, name="recipeadd"),
     path('authoradd/', views.author_add_view),
     path('createuser/', views.creatuser_view),
-    path('login/', views.login_view),
+    path('login/', views.login_view, name="login"),
     path('logout/', views.logout_view),
     path('editRecipe/<int:id>', views.edit_recipe),
     path('fav/<int:id>', views.add_favorite, name='addfavorite'),

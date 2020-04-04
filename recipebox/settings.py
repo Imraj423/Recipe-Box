@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'recipebox',
-    'guardian',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +75,7 @@ WSGI_APPLICATION = 'recipebox.wsgi.application'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # default
-    'guardian.backends.ObjectPermissionBackend',
+    
 )
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

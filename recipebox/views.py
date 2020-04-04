@@ -101,7 +101,7 @@ def creatuser_view(request):
         if form.is_valid():
             data = form.cleaned_data
             user = User.objects.create_user(
-                data['username'], data['password1']
+                data['username'], None, data['password1']
             )
             login(request, user)
             Author.objects.create(
@@ -127,7 +127,7 @@ def active_user_required(view_func):
     return decorated_view_func
 
 
-@active_user_required
+@login_required()
 def edit_recipe(request, id):
     html = 'editRecipe.html'
     instance = Recipe.objects.get(id=id)
@@ -143,24 +143,25 @@ def edit_recipe(request, id):
     return render(request, html, {'form': form})
 
 
-# @login_required()
+@login_required()
 def add_favorite(request, id):
     recipe = None
     user = None
 
     try:
         recipe = Recipe.objects.get(id=id)
-        user = Author.objects.get(name=request.user.username)
-        user.favorites.add(recipe)
-        user.save()
+        user = User.objects.get(id=request.user.id)
+        author = Author.objects.get(name=user.username)
+        author.favorites.add(recipe)
+        author.save()
     except Exception as e:
         print(e)
 
-        return HttpResponseRedirect(reverse("homepage"))
-    return render(request, 'author.html', {'recipe': recipe, 'user': user})
+    return HttpResponseRedirect(reverse("homepage"))
 
 
 def all_author_view(request):
     html = 'arturos.html'
     show_all = Author.objects.all()
     return render(request, html, {'show_all': show_all})
+
